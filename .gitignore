@@ -1,3 +1,7 @@
+.idea/
+.vscode/
+*.sublime-workspace
+
 # Logs
 logs
 *.log
