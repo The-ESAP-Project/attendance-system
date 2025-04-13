@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Face Detection</title>
+    <style>
+        #container {
+            margin: 0px auto;
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+        #videoInput, #canvasOutput {
+            width: 640px;
+            height: 480px;
+            position: absolute;
+        }
+        #errorMessage {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <video id="videoInput" width="640" height="480"></video>
+        <canvas id="canvasOutput" width="640" height="480"></canvas>
+    </div>
+    <div id="errorMessage"></div>
+
+    <!-- OpenCV.js -->
+    <script async src="https://docs.opencv.org/4.5.0/opencv.js" 
+        type="text/javascript"
+        onload="onOpenCvReady();">
+</script>
+    <!-- Utils for loading Haar cascade file -->
+    <script src="utils/utils.js"></script>
+    <script src="utils/face_detact.js"></script>
+</body>
+</html>
