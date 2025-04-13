@@ -1,6 +1,24 @@
-# 考勤管理系统
+<h1 align="center">
+  attendance-system
+</h1>
 
-一个基于人脸识别和刷卡功能的现代化考勤管理系统，适用于学校、企业等组织的上下班打卡和出勤统计。
+<p align="center">
+  一个基于人脸识别和刷卡功能的现代化考勤管理系统，适用于学校、企业等组织的上下班打卡和出勤统计
+</p>
+
+<p align="center">
+  <a href="https://www.codefactor.io/repository/github/the-esap-project/attendance-system">
+    <img src="https://www.codefactor.io/repository/github/the-esap-project/attendance-system/badge" alt="CodeFactor" />
+  </a>
+
+  <a href="https://github.com/The-ESAP-Project/attendance-system/activity">
+    <img src="https://img.shields.io/github/last-commit/The-ESAP-Project/attendance-system/master" alt="Last Commit"/>
+  </a>
+
+  <a href="./LICENSE">
+    <img src="https://img.shields.io/github/license/The-ESAP-Project/attendance-system" alt="GPL-3.0\"/>
+  </a>
+</p>
 
 ## 功能特点
 
