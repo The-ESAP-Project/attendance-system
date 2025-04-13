@@ -175,10 +175,11 @@
 - `JWT_SECRET`: JWT密钥
 - `API_BASE_ROUTE`: API基础路径
 - `ALLOWED_ORIGINS`: 允许的跨域源
+- `DEVICE`：推理设备
 
 ## 部署指南
 
-系统支持多核心部署，自动利用服务器所有CPU核心：
+系统支持多核心部署，自动利用服务器所有CPU核心或 使用GPU加速：
 
 1. 设置环境变量
    ```
