@@ -1,47 +1,118 @@
 // Global variables (equivalent to Python's global scope)
 let video = document.getElementById('videoInput');
+let videoSelect = document.getElementById('cameraSelect');
+let currentStream = null;
 let canvasOutput = document.getElementById('canvasOutput');
 let ctx = canvasOutput.getContext('2d');
 let faceCascade;
 let count = 0;
 const MAX_FACES = 200;
 let streaming = false;
-let lastCaptureTime = {}; // 记录每个人脸最后一次捕获时间
-const CAPTURE_INTERVAL = 3000; // 每个人脸的捕获间隔(毫秒)
+let lastCaptureTime = {}; // cache last capture time for each face
 const FPS = 3; // 增加FPS使视频更流畅
 let currentCount = document.getElementById('currentCount');
 let savedCount = document.getElementById('savedCount');
 
-
-// onOpenCvReady as entry point
+// Add at the beginning of the file, after global variables
 function onOpenCvReady() {
-    // Wait for OpenCV to be fully loaded
-    cv['onRuntimeInitialized'] = () => {
-        // Create cascade classifier
+    cv['onRuntimeInitialized'] = async () => {
+        console.log("OpenCV.js initialized");
         faceCascade = new cv.CascadeClassifier();
+        // Create utils instance
         let utils = new Utils('errorMessage');
+        // Load pre-trained classifier file
         let cascadeFile = 'haarcascade_frontalface_default.xml';
+        
         utils.createFileFromUrl(cascadeFile, cascadeFile, () => {
+            console.log("Cascade file loaded");
             faceCascade.load(cascadeFile);
-            startVideo();
+            // Initialize camera access
+            startVideo().then(() => {
+                console.log("Video started");
+                // Enumerate cameras after permission granted
+                getCameraDevices().then(() => {
+                    console.log("Camera devices enumerated");
+                });
+            });
         });
     };
 }
 
-function startVideo() {
-    navigator.mediaDevices.getUserMedia({ video: true })
-        .then(function(stream) {
-            video.srcObject = stream;
-            video.play();
-            video.addEventListener("playing", () => {
-                streaming = true;
-                processVideo();
-            });
-        })
-        .catch(function(err) {
-            console.error("Camera error: " + err);
+// Modify getCameraDevices function
+async function getCameraDevices() {
+    try {
+        // Request camera permission first
+        await navigator.mediaDevices.getUserMedia({ video: true });
+        
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        const videoDevices = devices.filter(device => device.kind === 'videoinput');
+        
+        console.log("Found video devices:", videoDevices);
+        
+        // Clear existing options
+        while (videoSelect.firstChild) {
+            videoSelect.removeChild(videoSelect.firstChild);
+        }
+        
+        // Add default option
+        const defaultOption = document.createElement('option');
+        defaultOption.value = '';
+        defaultOption.textContent = '选择摄像头...';
+        videoSelect.appendChild(defaultOption);
+        
+        // Add camera options
+        videoDevices.forEach((videoDevice, index) => {
+            const option = document.createElement('option');
+            option.value = videoDevice.deviceId;
+            option.textContent = videoDevice.label || `Camera ${index + 1}`;
+            videoSelect.appendChild(option);
         });
+    } catch (err) {
+        console.error("Error enumerating devices:", err);
+    }
 }
+
+async function startVideo(deviceId = '') {
+    // Stop any existing stream
+    if (currentStream) {
+        currentStream.getTracks().forEach(track => track.stop());
+    }
+
+    const constraints = {
+        video: deviceId ? { deviceId: { exact: deviceId } } : true
+    };
+
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia(constraints);
+        currentStream = stream;
+        video.srcObject = stream;
+        video.play();
+        
+        video.addEventListener("playing", () => {
+            streaming = true;
+            processVideo();
+        });
+        
+        // Get camera list after permission is granted
+        await getCameraDevices();
+    } catch (err) {
+        console.error("Camera error: " + err);
+    }
+}
+
+// Add event listener for camera selection
+videoSelect.addEventListener('change', (event) => {
+    if (event.target.value) {
+        startVideo(event.target.value);
+    }
+});
+
+// Add event listener for camera selection
+videoSelect.addEventListener('change', (event) => {
+    if (event.target.value) {
+        startVideo(event.target.value);
+    }
+});
 
 function processVideo() {
     let cap = new cv.VideoCapture(video);
